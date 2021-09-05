@@ -14,6 +14,7 @@ const initialState = {
 const Register: VFC = () => {
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState<String[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isFormValid = (): boolean => {
     if (!isFormEmptyValid()) {
@@ -53,14 +54,22 @@ const Register: VFC = () => {
   const handleSubmit = (e: React.ChangeEvent<{}>) => {
     if (isFormValid() === false) return;
     e.preventDefault();
+    setIsLoading(true);
 
     createUserWithEmailAndPassword(auth, state.email, state.password)
       .then((createUser) => {
         console.log(createUser);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        setErrors([error.toString(), ...errors]);
+        setIsLoading(false);
       });
+  };
+
+  const handleInputError = (inputName: string): string => {
+    return errors.some((error) => error.toLocaleLowerCase().includes(inputName)) ? 'error' : '';
   };
 
   return (
@@ -80,6 +89,7 @@ const Register: VFC = () => {
               placeholder="Username"
               onChange={handleChange}
               value={state.username}
+              className={handleInputError('username')}
               type="text"
             />
             <Form.Input
@@ -89,6 +99,7 @@ const Register: VFC = () => {
               iconPosition="left"
               placeholder="Email Address"
               onChange={handleChange}
+              className={handleInputError('email')}
               value={state.email}
               type="email"
             />
@@ -100,6 +111,7 @@ const Register: VFC = () => {
               placeholder="Password"
               onChange={handleChange}
               value={state.password}
+              className={handleInputError('password')}
               type="password"
             />
             <Form.Input
@@ -110,9 +122,10 @@ const Register: VFC = () => {
               placeholder="Password Confirmation"
               onChange={handleChange}
               value={state.passwordConfirmation}
+              className={handleInputError('password')}
               type="password"
             />
-            <Button color="orange" fluid size="large">
+            <Button disabled={isLoading} className={isLoading ? 'loading' : ''} color="orange" fluid size="large">
               Submit
             </Button>
           </Segment>
