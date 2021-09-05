@@ -1,10 +1,34 @@
-import { VFC } from 'react';
+import { useState, VFC } from 'react';
 import { Button, Form, Grid, Header, Icon, Message, Segment } from 'semantic-ui-react';
-
 import { Link } from 'react-router-dom';
 
+import { auth, createUserWithEmailAndPassword } from '../../api/auth';
+
 const Register: VFC = () => {
-  const handleChange = () => {};
+  const initialState = {
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
+  };
+
+  const [state, setState] = useState(initialState);
+
+  const handleChange = (e: React.ChangeEvent<{ name: string; value: string }>) => {
+    setState({ ...state, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.ChangeEvent<{}>) => {
+    e.preventDefault();
+
+    createUserWithEmailAndPassword(auth, state.email, state.password)
+      .then((createUser) => {
+        console.log(createUser);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -13,7 +37,7 @@ const Register: VFC = () => {
           <Icon name="puzzle piece" color="orange" />
           Register for DevChat
         </Header>
-        <Form size="large">
+        <Form onSubmit={handleSubmit} size="large">
           <Segment stacked>
             <Form.Input
               fluid
@@ -22,6 +46,7 @@ const Register: VFC = () => {
               iconPosition="left"
               placeholder="Username"
               onChange={handleChange}
+              value={state.username}
               type="text"
             />
             <Form.Input
@@ -31,6 +56,7 @@ const Register: VFC = () => {
               iconPosition="left"
               placeholder="Email Address"
               onChange={handleChange}
+              value={state.email}
               type="email"
             />
             <Form.Input
@@ -40,6 +66,7 @@ const Register: VFC = () => {
               iconPosition="left"
               placeholder="Password"
               onChange={handleChange}
+              value={state.password}
               type="password"
             />
             <Form.Input
@@ -49,6 +76,7 @@ const Register: VFC = () => {
               iconPosition="left"
               placeholder="Password Confirmation"
               onChange={handleChange}
+              value={state.passwordConfirmation}
               type="password"
             />
             <Button color="orange" fluid size="large">
