@@ -1,4 +1,4 @@
-import { useState, VFC } from 'react';
+import { ReactElement, useState, VFC } from 'react';
 import { Button, Form, Grid, Header, Icon, Message, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
@@ -13,12 +13,45 @@ const initialState = {
 
 const Register: VFC = () => {
   const [state, setState] = useState(initialState);
+  const [errors, setErrors] = useState<String[]>([]);
+
+  const isFormValid = (): boolean => {
+    if (!isFormEmptyValid()) {
+      setErrors(['全てのフィールドを入力してください', ...errors]);
+      return false;
+    } else if (!isPasswordValid()) {
+      setErrors(['パスワードが不正の値です', ...errors]);
+      return false;
+    }
+    return true;
+  };
+
+  const displayErrors = () => {
+    return errors.map((error, index) => {
+      return <p key={index}>{error}</p>;
+    });
+  };
+
+  const isFormEmptyValid = (): boolean => {
+    const { username, email, password, passwordConfirmation } = state;
+
+    return username.length !== 0 || email.length !== 0 || password.length !== 0 || passwordConfirmation.length !== 0;
+  };
+
+  const isPasswordValid = () => {
+    const { password, passwordConfirmation } = state;
+    const isValidLength = password.length > 6 && passwordConfirmation.length > 6;
+    const isSameValid = password === passwordConfirmation;
+
+    return isValidLength && isSameValid;
+  };
 
   const handleChange = (e: React.ChangeEvent<{ name: string; value: string }>) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e: React.ChangeEvent<{}>) => {
+    if (isFormValid() === false) return;
     e.preventDefault();
 
     createUserWithEmailAndPassword(auth, state.email, state.password)
@@ -84,6 +117,12 @@ const Register: VFC = () => {
             </Button>
           </Segment>
         </Form>
+        {errors.length !== 0 && (
+          <Message error>
+            <h3>Error</h3>
+            {displayErrors()}
+          </Message>
+        )}
         <Message>
           Already a user? <Link to="/login">Login</Link>
         </Message>
