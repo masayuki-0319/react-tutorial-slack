@@ -9,7 +9,6 @@ import Register from './components/Auth/Register';
 import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
-
 const Root = () => {
   return (
     <BrowserRouter>
@@ -23,9 +22,9 @@ const Root = () => {
 };
 
 ReactDOM.render(
-  <React.StrictMode>
+  <>
     <Root />
-  </React.StrictMode>,
+  </>,
   document.getElementById('root')
 );
 

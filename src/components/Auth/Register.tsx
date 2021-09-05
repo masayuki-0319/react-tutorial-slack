@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom';
 
 import { auth, createUserWithEmailAndPassword } from '../../api/auth';
 
-const Register: VFC = () => {
-  const initialState = {
-    username: '',
-    email: '',
-    password: '',
-    passwordConfirmation: '',
-  };
+const initialState = {
+  username: '',
+  email: '',
+  password: '',
+  passwordConfirmation: '',
+};
 
+const Register: VFC = () => {
   const [state, setState] = useState(initialState);
 
   const handleChange = (e: React.ChangeEvent<{ name: string; value: string }>) => {
