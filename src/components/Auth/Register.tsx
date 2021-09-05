@@ -1,8 +1,11 @@
-import { ReactElement, useState, VFC } from 'react';
+import { useState, VFC } from 'react';
 import { Button, Form, Grid, Header, Icon, Message, Segment } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import md5 from 'md5';
 
-import { auth, createUserWithEmailAndPassword } from '../../api/auth';
+import { auth, createUserWithEmailAndPassword, updateProfile } from '../../api/auth';
+import { database, ref, child, set } from '../../api/database';
+import { UserCredential } from 'firebase/auth';
 
 const initialState = {
   username: '',
@@ -15,6 +18,8 @@ const Register: VFC = () => {
   const [state, setState] = useState(initialState);
   const [errors, setErrors] = useState<String[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [usersRef, _] = useState(ref(database, 'users'));
 
   const isFormValid = (): boolean => {
     if (!isFormEmptyValid()) {
@@ -57,15 +62,34 @@ const Register: VFC = () => {
     setIsLoading(true);
 
     createUserWithEmailAndPassword(auth, state.email, state.password)
-      .then((createUser) => {
-        console.log(createUser);
-        setIsLoading(false);
+      .then((createdUser) => {
+        console.log(createdUser);
+        updateProfile(createdUser.user, {
+          displayName: state.username,
+          photoURL: `https://gravatar.com/${md5(createdUser.user.email as string)}?d=identicon`,
+        })
+          .then(() => {
+            saveUser(createdUser).then(() => {
+              console.log('user saved');
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            setErrors([error.toString(), ...errors]);
+          });
       })
       .catch((error) => {
         console.log(error);
         setErrors([error.toString(), ...errors]);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const saveUser = (createdUser: UserCredential) => {
+    const childRef = child(usersRef, createdUser.user.uid);
+    return set(childRef, { name: createdUser.user.displayName, avatar: createdUser.user.photoURL });
   };
 
   const handleInputError = (inputName: string): string => {
