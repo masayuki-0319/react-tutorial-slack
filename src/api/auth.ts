@@ -1,6 +1,6 @@
 import { firebase } from './firebase';
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from 'firebase/auth';
 
 const auth = getAuth(firebase);
 
-export { auth, createUserWithEmailAndPassword, updateProfile };
+export { auth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword };
