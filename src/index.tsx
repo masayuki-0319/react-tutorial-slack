@@ -1,30 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-
-import App from './components/App';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import './index.css';
 import 'semantic-ui-css/semantic.min.css';
 
-const Root = () => {
-  return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-      </Switch>
-    </BrowserRouter>
-  );
-};
+import './index.css';
+import { Routes } from './Routes';
+import { BrowserRouter, withRouter } from 'react-router-dom';
+
+const RootWithAuth = withRouter(Routes);
 
 ReactDOM.render(
-  <>
-    <Root />
-  </>,
+  <BrowserRouter>
+    <RootWithAuth />
+  </BrowserRouter>,
   document.getElementById('root')
 );
 
