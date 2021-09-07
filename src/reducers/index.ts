@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { ActionTypes, SET_USER } from '../actions/types';
 import { User } from '../types/User';
 
-type State = {
+export type State = {
   currentUser: User | null;
   isLoading: boolean;
 };
